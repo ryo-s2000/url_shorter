@@ -1,0 +1,16 @@
+version: '3'
+services:
+  frontend:
+    build: ./infra/dev/nodejs
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "3000:3000"
+    tty: true
+  backend:
+    build: ./infra/dev/ruby
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "3001:3001"
+    tty: true

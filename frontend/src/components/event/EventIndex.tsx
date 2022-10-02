@@ -6,6 +6,7 @@ interface ShortUrl {
 }
 
 const generateShortUrl = async (originalUrl: string): Promise<string> => {
+  // validation not url and already short link
   const res = await axios.post('/url/shorten', {
     originalUrl: originalUrl
   });

@@ -1,6 +1,7 @@
 require 'digest/md5'
 
 class Api::EventsController < ApiController
+    # validation
     def shorten
       originalUrl = params[:originalUrl];
       uniqueHash = generateUniqueHash(originalUrl);
@@ -16,12 +17,13 @@ class Api::EventsController < ApiController
       redirect_to originalUrl, allow_other_host: true
     end
 
-    # todo more short
+    # more short
     def generateUniqueHash(originalUrl)
       return Digest::MD5.hexdigest(originalUrl)
     end
 
-    # todo nosql unique
+    # nosql unique performance
+    # TODO unique制約とパフォーマンスを見たい
     def saveUrl(uniqueHash, originalUrl)
       Url.create({
         unique_hash: uniqueHash,

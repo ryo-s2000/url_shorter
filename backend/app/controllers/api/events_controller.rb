@@ -1,54 +1,35 @@
-class Api::EventsController < ApiController
-    before_action :set_event, only: %i[show update destroy]
+require 'digest/md5'
 
-    def index
-      @events = Event.all
-      render json: @events
+class Api::EventsController < ApiController
+    def shorten
+      originalUrl = params[:originalUrl];
+      uniqueHash = generateUniqueHash(originalUrl);
+      saveUrl(uniqueHash, originalUrl);
+
+      shortenUrl = 'http://localhost:3001/api/' + uniqueHash;
+      render :json => {url: shortenUrl};
     end
 
     def show
-      render json: @event
+      uniqueHash = params[:uniqueHash];
+      originalUrl = getOriginalUrl(uniqueHash)
+      redirect_to originalUrl, allow_other_host: true
     end
 
-    def create
-      @event = Event.new(event_params)
-
-      if @event.save
-        render json: @event, status: :created
-      else
-        render json: @event.errors, status: :unprocessable_entity
-      end
+    # todo more short
+    def generateUniqueHash(originalUrl)
+      return Digest::MD5.hexdigest(originalUrl)
     end
 
-    def update
-      if @event.update(event_params)
-        render json: @event, status: :ok
-      else
-        render json: @event.errors, status: :unprocessable_entity
-      end
+    # todo nosql unique
+    def saveUrl(uniqueHash, originalUrl)
+      Url.create({
+        unique_hash: uniqueHash,
+        original_url: originalUrl
+      })
     end
 
-    def destroy
-      @event.destroy
-    end
-
-    private
-
-    def set_event
-      @event = Event.find(params[:id])
-    end
-
-    def event_params
-      params.require(:event).permit(
-        :id,
-        :event_type,
-        :event_date,
-        :title,
-        :speaker,
-        :host,
-        :published,
-        :created_at,
-        :updated_at
-      )
+    def getOriginalUrl(uniqueHash)
+      return Url.where(unique_hash: uniqueHash)[0]['original_url']
     end
 end

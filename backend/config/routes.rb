@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :events, only: %i[index show create destroy update]
+    post '/url/shorten', to: 'events#shorten'
+    get '/:uniqueHash', to: 'events#show'
   end
 end

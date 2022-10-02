@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_30_055612) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_01_093107) do
   create_table "events", force: :cascade do |t|
     t.string "event_type"
     t.date "event_date"
@@ -18,6 +18,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_30_055612) do
     t.string "speaker"
     t.string "host"
     t.boolean "published"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "urls", force: :cascade do |t|
+    t.string "unique_hash"
+    t.text "original_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

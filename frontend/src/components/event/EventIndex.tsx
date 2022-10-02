@@ -1,38 +1,59 @@
 import { useState } from 'react';
 import axios from 'plugins/axios/config';
 
-interface Event {
-  id: number;
-  event_type: string;
-  event_date: string;
-  title: string;
-  speaker: string;
-  host: string;
-  published: string;
-  created_at: string;
-  updated_at: string;
+interface ShortUrl {
+  url: string;
 }
 
-const fetchEvents = async (): Promise<Event[]> => {
-  const res = await axios.get('/events');
-  const result = (await res.data) as Event[];
-  return result;
+const generateShortUrl = async (originalUrl: string): Promise<string> => {
+  const res = await axios.post('/url/shorten', {
+    originalUrl: originalUrl
+  });
+  const result = (await res.data) as ShortUrl;
+  return result.url;
 };
 
+const copyTextToClipboard = (text: string): void => {
+  navigator.clipboard.writeText(text)
+  .then(function() {
+    console.log('Async: Copying to clipboard was successful!');
+  }, function(err) {
+    console.error('Async: Could not copy text: ', err);
+  });
+}
+
 const IndexPage = () => {
-  const [events, setEvents] = useState([]);
+  const [originalUrl, setOriginalUrl] = useState('');
+  const [shortUrl, setEvents] = useState('');
 
-  const handleClick = async () => {
-    const events = await fetchEvents();
-    setEvents(events);
+  const clickShorten = async () => {
+    const generatedShortUrl = await generateShortUrl(originalUrl);
+    setEvents(generatedShortUrl);
   };
-
-  const listItems = events.map((event) => <li key={event.id}>{event.title}</li>);
 
   return (
     <div>
-      <button onClick={handleClick}>更新</button>
-      <ul>{listItems}</ul>
+      <div className='flex'>
+        <div>
+          <input value={originalUrl} onChange={(event) => setOriginalUrl(event.target.value)} />
+        </div>
+
+        <div>
+          <button onClick={clickShorten}>Shorten</button>
+        </div>
+      </div>
+
+      <div className='flex'>
+        <div>
+          <input value={shortUrl} onChange={()=>''} />
+        </div>
+        <div>
+          <button onClick={() => copyTextToClipboard(shortUrl)}>
+            URLをコピーする
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 };

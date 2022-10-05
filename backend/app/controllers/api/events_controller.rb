@@ -33,4 +33,6 @@ class Api::EventsController < ApiController
     def getOriginalUrl(uniqueHash)
       return Url.where(unique_hash: uniqueHash)[0]['original_url']
     end
+    
+    # testable?
 end

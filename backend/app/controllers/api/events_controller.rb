@@ -23,7 +23,6 @@ class Api::EventsController < ApiController
     end
 
     # nosql unique performance
-    # TODO unique制約とパフォーマンスを見たい
     def saveUrl(uniqueHash, originalUrl)
       Url.create({
         unique_hash: uniqueHash,
